@@ -8,31 +8,66 @@
 </head>
 <body>
     <div class="container">
-        <h1>Focus Timer</h1>
+        <!-- Focus View -->
+        <div id="focusView" class="view active">
+            <header class="view-header">
+                <h1>Focus Timer</h1>
+                <button id="settingsBtn" class="btn-icon">⚙️</button>
+            </header>
 
-        <div class="task-info">
-            <div class="current-task">
-                <span class="task-label">현재 작업</span>
-                <span class="task-title" id="currentTaskTitle">-</span>
+            <div class="task-info">
+                <div class="current-task">
+                    <span class="task-label">현재 작업</span>
+                    <span class="task-title" id="currentTaskTitle">-</span>
+                </div>
+                <div class="next-task">
+                    <span class="task-label">다음</span>
+                    <span class="task-title" id="nextTaskTitle">-</span>
+                </div>
             </div>
-            <div class="next-task">
-                <span class="task-label">다음</span>
-                <span class="task-title" id="nextTaskTitle">-</span>
+
+            <div class="timer-display">
+                <svg class="progress-ring" viewBox="0 0 200 200">
+                    <circle class="progress-ring-bg" cx="100" cy="100" r="90"/>
+                    <circle class="progress-ring-circle" cx="100" cy="100" r="90"/>
+                </svg>
+                <div class="timer-text">00:00</div>
+            </div>
+
+            <div class="controls">
+                <button id="startBtn" class="btn btn-primary">시작</button>
+                <button id="pauseBtn" class="btn btn-secondary" disabled>일시정지</button>
+                <button id="skipBtn" class="btn btn-secondary" disabled>건너뛰기</button>
             </div>
         </div>
 
-        <div class="timer-display">
-            <svg class="progress-ring" viewBox="0 0 200 200">
-                <circle class="progress-ring-bg" cx="100" cy="100" r="90"/>
-                <circle class="progress-ring-circle" cx="100" cy="100" r="90"/>
-            </svg>
-            <div class="timer-text">00:00</div>
-        </div>
+        <!-- Edit View -->
+        <div id="editView" class="view">
+            <header class="view-header">
+                <button id="backBtn" class="btn-icon">←</button>
+                <h1>작업 편집</h1>
+            </header>
 
-        <div class="controls">
-            <button id="startBtn" class="btn btn-primary">시작</button>
-            <button id="pauseBtn" class="btn btn-secondary" disabled>일시정지</button>
-            <button id="skipBtn" class="btn btn-secondary" disabled>건너뛰기</button>
+            <div class="task-form">
+                <input type="text" id="taskInput" placeholder="작업명 입력" class="input">
+                <select id="durationSelect" class="select">
+                    <option value="5">5분</option>
+                    <option value="10">10분</option>
+                    <option value="15">15분</option>
+                    <option value="20">20분</option>
+                    <option value="25" selected>25분</option>
+                    <option value="30">30분</option>
+                    <option value="45">45분</option>
+                    <option value="60">60분</option>
+                </select>
+                <button id="addTaskBtn" class="btn btn-primary">+ 추가</button>
+            </div>
+
+            <ul id="taskList" class="task-list">
+                <!-- 동적으로 생성 -->
+            </ul>
+
+            <button id="startFocusBtn" class="btn btn-primary btn-full">포커스 시작</button>
         </div>
     </div>
     <script type="module" src="app.js"></script>

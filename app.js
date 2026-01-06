@@ -5,10 +5,15 @@ import {
     getNextTask,
     moveToNextTask,
     updateTaskStatus,
+    addTask,
+    deleteTask,
+    setCurrentIndex,
     resetData
 } from './storage.js';
 
-// DOM 요소
+// DOM 요소 - Focus View
+const focusView = document.getElementById('focusView');
+const editView = document.getElementById('editView');
 const progressCircle = document.querySelector('.progress-ring-circle');
 const timerText = document.querySelector('.timer-text');
 const startBtn = document.getElementById('startBtn');
@@ -16,6 +21,15 @@ const pauseBtn = document.getElementById('pauseBtn');
 const skipBtn = document.getElementById('skipBtn');
 const currentTaskTitle = document.getElementById('currentTaskTitle');
 const nextTaskTitle = document.getElementById('nextTaskTitle');
+const settingsBtn = document.getElementById('settingsBtn');
+
+// DOM 요소 - Edit View
+const backBtn = document.getElementById('backBtn');
+const taskInput = document.getElementById('taskInput');
+const durationSelect = document.getElementById('durationSelect');
+const addTaskBtn = document.getElementById('addTaskBtn');
+const taskList = document.getElementById('taskList');
+const startFocusBtn = document.getElementById('startFocusBtn');
 
 // 원형 진행 바 설정
 const RADIUS = 90;
@@ -30,6 +44,12 @@ function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+// 분 단위 포맷팅
+function formatMinutes(seconds) {
+    const mins = Math.floor(seconds / 60);
+    return `${mins}분`;
 }
 
 // 진행 바 업데이트
@@ -51,8 +71,45 @@ function updateTaskDisplay() {
     const current = getCurrentTask();
     const next = getNextTask();
 
-    currentTaskTitle.textContent = current ? current.title : '모든 작업 완료!';
+    currentTaskTitle.textContent = current ? current.title : '작업 없음';
     nextTaskTitle.textContent = next ? next.title : '-';
+}
+
+// 뷰 전환
+function showView(view) {
+    focusView.classList.remove('active');
+    editView.classList.remove('active');
+
+    if (view === 'focus') {
+        focusView.classList.add('active');
+    } else {
+        editView.classList.add('active');
+        renderTaskList();
+    }
+}
+
+// 작업 리스트 렌더링
+function renderTaskList() {
+    const data = loadTasks();
+    taskList.innerHTML = '';
+
+    if (data.tasks.length === 0) {
+        taskList.innerHTML = '<li class="empty-message">작업을 추가해주세요</li>';
+        return;
+    }
+
+    data.tasks.forEach((task) => {
+        const li = document.createElement('li');
+        li.className = 'task-item';
+        li.innerHTML = `
+            <div class="task-item-info">
+                <span class="task-item-title">${task.title}</span>
+                <span class="task-item-duration">${formatMinutes(task.duration)}</span>
+            </div>
+            <button class="btn-delete" data-id="${task.id}">✕</button>
+        `;
+        taskList.appendChild(li);
+    });
 }
 
 // 타이머 초기화
@@ -60,8 +117,8 @@ function initTimer() {
     const currentTask = getCurrentTask();
 
     if (!currentTask) {
-        timerText.textContent = '완료!';
-        updateProgress(0);
+        timerText.textContent = '00:00';
+        updateProgress(100);
         updateButtons(false, true);
         return;
     }
@@ -76,7 +133,6 @@ function initTimer() {
     timer.onTick = (remainingSeconds, percentage) => {
         timerText.textContent = formatTime(remainingSeconds);
         updateProgress(percentage);
-        console.log(`[${currentTask.title}] ${formatTime(remainingSeconds)} (${percentage.toFixed(0)}%)`);
     };
 
     timer.onComplete = () => {
@@ -107,7 +163,9 @@ function initTimer() {
     updateButtons(false, false);
 }
 
-// 버튼 이벤트
+// === 이벤트 리스너 ===
+
+// Focus View 버튼
 startBtn.addEventListener('click', () => {
     const currentTask = getCurrentTask();
     if (currentTask && timer) {
@@ -136,14 +194,81 @@ skipBtn.addEventListener('click', () => {
     }
 });
 
-// 앱 초기화
+// 설정 버튼 (Focus → Edit)
+settingsBtn.addEventListener('click', () => {
+    if (timer && timer.isRunning) {
+        timer.pause();
+    }
+    showView('edit');
+});
+
+// 돌아가기 버튼 (Edit → Focus)
+backBtn.addEventListener('click', () => {
+    showView('focus');
+    updateTaskDisplay();
+    initTimer();
+});
+
+// 작업 추가
+addTaskBtn.addEventListener('click', () => {
+    const title = taskInput.value.trim();
+    const minutes = parseInt(durationSelect.value, 10);
+
+    if (!title) {
+        taskInput.focus();
+        return;
+    }
+
+    addTask(title, minutes);
+    taskInput.value = '';
+    renderTaskList();
+    console.log(`작업 추가: ${title} (${minutes}분)`);
+});
+
+// Enter 키로 작업 추가
+taskInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        addTaskBtn.click();
+    }
+});
+
+// 작업 삭제 (이벤트 위임)
+taskList.addEventListener('click', (e) => {
+    if (e.target.classList.contains('btn-delete')) {
+        const id = e.target.dataset.id;
+        deleteTask(id);
+        renderTaskList();
+        console.log(`작업 삭제: ${id}`);
+    }
+});
+
+// 포커스 시작 버튼
+startFocusBtn.addEventListener('click', () => {
+    const data = loadTasks();
+    if (data.tasks.length === 0) {
+        alert('작업을 먼저 추가해주세요.');
+        return;
+    }
+
+    // 첫 번째 pending 작업으로 이동
+    setCurrentIndex(0);
+    showView('focus');
+    updateTaskDisplay();
+    initTimer();
+});
+
+// === 앱 초기화 ===
 console.log('앱 시작됨');
 
-// 테스트용: 데이터 초기화 (새로운 더미 데이터로 시작)
-resetData();
-
+// 기존 데이터 로드 (없으면 더미 데이터 생성)
 const data = loadTasks();
 console.log('작업 목록:', data.tasks.map(t => `${t.title} (${t.duration}초)`));
 
-updateTaskDisplay();
-initTimer();
+// Edit View로 시작 (작업이 없거나 처음 시작할 때)
+if (data.tasks.length === 0) {
+    showView('edit');
+} else {
+    showView('focus');
+    updateTaskDisplay();
+    initTimer();
+}

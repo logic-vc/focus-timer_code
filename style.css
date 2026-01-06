@@ -19,11 +19,57 @@ body {
     padding: 1rem;
     width: 100%;
     max-width: 400px;
+    position: relative;
+    overflow: hidden;
 }
 
-h1 {
-    font-size: 1.5rem;
+/* 뷰 전환 */
+.view {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.view.active {
+    display: block;
+    opacity: 1;
+}
+
+/* 뷰 헤더 */
+.view-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
     margin-bottom: 1.5rem;
+}
+
+.view-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+}
+
+.btn-icon {
+    position: absolute;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.btn-icon:hover {
+    opacity: 1;
+}
+
+#settingsBtn {
+    right: 0;
+}
+
+#backBtn {
+    left: 0;
 }
 
 /* 작업 정보 */
@@ -125,6 +171,7 @@ h1 {
 .btn-primary {
     background-color: #4ade80;
     color: #1a1a1a;
+    font-weight: 600;
 }
 
 .btn-secondary {
@@ -132,9 +179,107 @@ h1 {
     color: #fff;
 }
 
+.btn-full {
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: #fff;
+}
+
+/* 작업 추가 폼 */
+.task-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.input,
+.select {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #2a2a2a;
+    color: #fff;
+}
+
+.input {
+    flex: 1;
+    min-width: 0;
+}
+
+.input::placeholder {
+    color: #666;
+}
+
+.select {
+    width: 80px;
+}
+
+.task-form .btn {
+    padding: 0.75rem 1rem;
+    white-space: nowrap;
+}
+
+/* 작업 리스트 */
+.task-list {
+    list-style: none;
+    text-align: left;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.task-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.task-item-title {
+    font-weight: 500;
+}
+
+.task-item-duration {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.task-item .btn-delete {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.task-item .btn-delete:hover {
+    opacity: 1;
+}
+
+.empty-message {
+    color: #666;
+    padding: 2rem;
+}
+
 /* 태블릿 이상 */
 @media (min-width: 768px) {
-    h1 {
+    .view-header h1 {
         font-size: 2rem;
     }
 
@@ -154,7 +299,7 @@ h1 {
         max-width: 600px;
     }
 
-    h1 {
+    .view-header h1 {
         font-size: 2.5rem;
     }
 }
