@@ -4,11 +4,26 @@
     box-sizing: border-box;
 }
 
+:root {
+    --color-bg-start: #0f0f0f;
+    --color-bg-end: #1a1a1a;
+    --color-red: #ff4444;
+    --color-orange: #ff9933;
+    --color-gray: #666666;
+    --color-gray-light: #888888;
+    --color-gray-dark: #333333;
+    --color-white: #ffffff;
+    --color-card: #1e1e1e;
+    --color-input: #2a2a2a;
+    --font-mono: 'Inter', -apple-system, BlinkMacSystemFont, monospace;
+}
+
 body {
-    background-color: #1a1a1a;
-    color: #ffffff;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(180deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
+    color: var(--color-white);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,23 +31,25 @@ body {
 
 .container {
     text-align: center;
-    padding: 1rem;
+    padding: 1.5rem;
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     position: relative;
     overflow: hidden;
 }
 
-/* 뷰 전환 */
+/* 뷰 전환 애니메이션 */
 .view {
     display: none;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .view.active {
     display: block;
     opacity: 1;
+    transform: translateY(0);
 }
 
 /* 뷰 헤더 */
@@ -45,8 +62,10 @@ body {
 }
 
 .view-header h1 {
-    font-size: 1.5rem;
-    margin-bottom: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-gray-light);
+    letter-spacing: -0.02em;
 }
 
 .btn-icon {
@@ -56,12 +75,17 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0.5rem;
-    opacity: 0.7;
-    transition: opacity 0.2s;
+    opacity: 0.6;
+    transition: opacity 0.2s, transform 0.2s;
 }
 
 .btn-icon:hover {
     opacity: 1;
+    transform: scale(1.1);
+}
+
+.btn-icon:active {
+    transform: scale(0.95);
 }
 
 #settingsBtn {
@@ -70,21 +94,25 @@ body {
 
 #backBtn {
     left: 0;
+    color: var(--color-white);
 }
 
-/* 작업 정보 */
+/* 작업 정보 - Focus View */
 .task-info {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .current-task {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .current-task .task-title {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #4ade80;
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-white);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
 }
 
 .next-task {
@@ -92,22 +120,40 @@ body {
 }
 
 .next-task .task-title {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 400;
 }
 
 .task-label {
     display: block;
-    font-size: 0.75rem;
-    color: #888;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--color-gray-light);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
     margin-bottom: 0.25rem;
 }
 
 /* 타이머 디스플레이 */
 .timer-display {
     position: relative;
-    width: 200px;
-    height: 200px;
+    width: 60vw;
+    max-width: 240px;
+    aspect-ratio: 1;
     margin: 0 auto 2rem;
+}
+
+.timer-display.complete {
+    animation: pulse-border 1s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% {
+        filter: drop-shadow(0 0 0 transparent);
+    }
+    50% {
+        filter: drop-shadow(0 0 20px var(--color-red));
+    }
 }
 
 .progress-ring {
@@ -118,18 +164,18 @@ body {
 
 .progress-ring-bg {
     fill: none;
-    stroke: #333;
-    stroke-width: 8;
+    stroke: var(--color-gray-dark);
+    stroke-width: 6;
 }
 
 .progress-ring-circle {
     fill: none;
-    stroke: #4ade80;
-    stroke-width: 8;
+    stroke: var(--color-red);
+    stroke-width: 6;
     stroke-linecap: round;
     stroke-dasharray: 565.48;
     stroke-dashoffset: 0;
-    transition: stroke-dashoffset 0.3s ease;
+    transition: stroke-dashoffset 0.5s ease;
 }
 
 .timer-text {
@@ -137,9 +183,12 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 2.5rem;
-    font-weight: bold;
+    font-size: 3rem;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
+    color: var(--color-red);
+    letter-spacing: -0.02em;
 }
 
 /* 컨트롤 버튼 */
@@ -151,59 +200,92 @@ body {
 }
 
 .btn {
-    padding: 0.75rem 1.5rem;
+    padding: 0.875rem 1.5rem;
+    min-height: 44px;
     font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
+    transition: transform 0.15s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 }
 
-.btn:active {
-    transform: scale(0.95);
+.btn:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+
+.btn:active:not(:disabled) {
+    transform: scale(0.98);
 }
 
 .btn:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
-.btn-primary {
-    background-color: #4ade80;
-    color: #1a1a1a;
-    font-weight: 600;
+.btn-start {
+    background-color: var(--color-red);
+    color: var(--color-white);
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
 }
 
-.btn-secondary {
-    background-color: #333;
-    color: #fff;
+.btn-start:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
+}
+
+.btn-pause {
+    background-color: var(--color-orange);
+    color: var(--color-white);
+    box-shadow: 0 4px 12px rgba(255, 153, 51, 0.3);
+}
+
+.btn-pause:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(255, 153, 51, 0.4);
+}
+
+.btn-skip {
+    background-color: var(--color-gray);
+    color: var(--color-white);
+}
+
+.btn-add {
+    background-color: var(--color-red);
+    color: var(--color-white);
+    padding: 0.75rem 1rem;
 }
 
 .btn-full {
     width: 100%;
     margin-top: 1.5rem;
-}
-
-.btn-danger {
-    background-color: #ef4444;
-    color: #fff;
+    padding: 1rem;
+    font-size: 1.1rem;
 }
 
 /* 작업 추가 폼 */
 .task-form {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
 }
 
 .input,
 .select {
-    padding: 0.75rem;
+    padding: 0.875rem;
+    min-height: 44px;
     font-size: 1rem;
-    border: 1px solid #333;
-    border-radius: 8px;
-    background-color: #2a2a2a;
-    color: #fff;
+    font-family: inherit;
+    border: 2px solid var(--color-gray-dark);
+    border-radius: 12px;
+    background-color: var(--color-input);
+    color: var(--color-white);
+    transition: border-color 0.2s ease;
+}
+
+.input:focus,
+.select:focus {
+    outline: none;
+    border-color: var(--color-red);
 }
 
 .input {
@@ -212,34 +294,46 @@ body {
 }
 
 .input::placeholder {
-    color: #666;
+    color: var(--color-gray);
 }
 
 .select {
-    width: 80px;
-}
-
-.task-form .btn {
-    padding: 0.75rem 1rem;
-    white-space: nowrap;
+    width: 85px;
+    cursor: pointer;
 }
 
 /* 작업 리스트 */
 .task-list {
     list-style: none;
     text-align: left;
-    max-height: 300px;
+    max-height: 280px;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-gray-dark) transparent;
+}
+
+.task-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.task-list::-webkit-scrollbar-thumb {
+    background-color: var(--color-gray-dark);
+    border-radius: 3px;
 }
 
 .task-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.75rem 1rem;
-    background-color: #2a2a2a;
-    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    background-color: var(--color-card);
+    border-radius: 12px;
     margin-bottom: 0.5rem;
+    transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.task-item:hover {
+    background-color: #252525;
 }
 
 .task-item-info {
@@ -250,56 +344,94 @@ body {
 
 .task-item-title {
     font-weight: 500;
+    font-size: 1rem;
 }
 
 .task-item-duration {
     font-size: 0.8rem;
-    color: #888;
+    color: var(--color-gray-light);
 }
 
 .task-item .btn-delete {
     background: none;
     border: none;
-    color: #ef4444;
+    color: var(--color-red);
     font-size: 1.25rem;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    opacity: 0.7;
-    transition: opacity 0.2s;
+    padding: 0.5rem;
+    opacity: 0.6;
+    transition: opacity 0.2s, transform 0.2s;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .task-item .btn-delete:hover {
     opacity: 1;
+    transform: scale(1.1);
 }
 
 .empty-message {
-    color: #666;
-    padding: 2rem;
+    color: var(--color-gray);
+    padding: 3rem 1rem;
+    text-align: center;
+    font-size: 0.95rem;
 }
 
 /* 태블릿 이상 */
 @media (min-width: 768px) {
     .view-header h1 {
-        font-size: 2rem;
+        font-size: 1.5rem;
+    }
+
+    .current-task .task-title {
+        font-size: 2.25rem;
     }
 
     .timer-display {
-        width: 250px;
-        height: 250px;
+        width: 280px;
+        max-width: 280px;
     }
 
     .timer-text {
-        font-size: 3rem;
+        font-size: 3.5rem;
     }
 }
 
 /* 데스크톱 */
 @media (min-width: 1024px) {
     .container {
-        max-width: 600px;
+        max-width: 500px;
     }
 
-    .view-header h1 {
+    .timer-display {
+        width: 300px;
+        max-width: 300px;
+    }
+
+    .timer-text {
+        font-size: 4rem;
+    }
+}
+
+/* 작은 화면 최적화 */
+@media (max-height: 600px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .task-info {
+        margin-bottom: 1rem;
+    }
+
+    .timer-display {
+        width: 50vw;
+        margin-bottom: 1.5rem;
+    }
+
+    .timer-text {
         font-size: 2.5rem;
     }
 }

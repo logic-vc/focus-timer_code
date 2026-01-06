@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Focus Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,7 +15,7 @@
         <div id="focusView" class="view active">
             <header class="view-header">
                 <h1>Focus Timer</h1>
-                <button id="settingsBtn" class="btn-icon">⚙️</button>
+                <button id="settingsBtn" class="btn-icon" aria-label="설정">⚙️</button>
             </header>
 
             <div class="task-info">
@@ -35,16 +38,16 @@
             </div>
 
             <div class="controls">
-                <button id="startBtn" class="btn btn-primary">시작</button>
-                <button id="pauseBtn" class="btn btn-secondary" disabled>일시정지</button>
-                <button id="skipBtn" class="btn btn-secondary" disabled>건너뛰기</button>
+                <button id="startBtn" class="btn btn-start">시작</button>
+                <button id="pauseBtn" class="btn btn-pause" disabled>일시정지</button>
+                <button id="skipBtn" class="btn btn-skip" disabled>건너뛰기</button>
             </div>
         </div>
 
         <!-- Edit View -->
         <div id="editView" class="view">
             <header class="view-header">
-                <button id="backBtn" class="btn-icon">←</button>
+                <button id="backBtn" class="btn-icon" aria-label="돌아가기">←</button>
                 <h1>작업 편집</h1>
             </header>
 
@@ -60,14 +63,14 @@
                     <option value="45">45분</option>
                     <option value="60">60분</option>
                 </select>
-                <button id="addTaskBtn" class="btn btn-primary">+ 추가</button>
+                <button id="addTaskBtn" class="btn btn-add">+ 추가</button>
             </div>
 
             <ul id="taskList" class="task-list">
                 <!-- 동적으로 생성 -->
             </ul>
 
-            <button id="startFocusBtn" class="btn btn-primary btn-full">포커스 시작</button>
+            <button id="startFocusBtn" class="btn btn-start btn-full">포커스 시작</button>
         </div>
     </div>
     <script type="module" src="app.js"></script>

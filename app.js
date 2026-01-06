@@ -14,6 +14,7 @@ import {
 // DOM 요소 - Focus View
 const focusView = document.getElementById('focusView');
 const editView = document.getElementById('editView');
+const timerDisplay = document.querySelector('.timer-display');
 const progressCircle = document.querySelector('.progress-ring-circle');
 const timerText = document.querySelector('.timer-text');
 const startBtn = document.getElementById('startBtn');
@@ -112,9 +113,20 @@ function renderTaskList() {
     });
 }
 
+// 완료 애니메이션 표시
+function showCompleteAnimation() {
+    timerDisplay.classList.add('complete');
+    setTimeout(() => {
+        timerDisplay.classList.remove('complete');
+    }, 2000);
+}
+
 // 타이머 초기화
 function initTimer() {
     const currentTask = getCurrentTask();
+
+    // 완료 애니메이션 제거
+    timerDisplay.classList.remove('complete');
 
     if (!currentTask) {
         timerText.textContent = '00:00';
@@ -138,23 +150,27 @@ function initTimer() {
     timer.onComplete = () => {
         console.log(`[${currentTask.title}] 완료!`);
         updateTaskStatus(currentTask.id, 'completed');
+        showCompleteAnimation();
 
-        // 다음 작업으로 자동 전환
-        const nextTask = moveToNextTask();
-        if (nextTask) {
-            console.log(`다음 작업: ${nextTask.title}`);
-            updateTaskDisplay();
-            initTimer();
-            // 자동 시작
-            timer.start();
-            updateButtons(true, false);
-            updateTaskStatus(nextTask.id, 'active');
-        } else {
-            updateTaskDisplay();
-            timerText.textContent = '완료!';
-            updateProgress(0);
-            updateButtons(false, true);
-        }
+        // 다음 작업으로 자동 전환 (2초 후)
+        setTimeout(() => {
+            const nextTask = moveToNextTask();
+            if (nextTask) {
+                console.log(`다음 작업: ${nextTask.title}`);
+                updateTaskDisplay();
+                initTimer();
+                // 자동 시작
+                timer.start();
+                updateButtons(true, false);
+                updateTaskStatus(nextTask.id, 'active');
+            } else {
+                updateTaskDisplay();
+                currentTaskTitle.textContent = '모든 작업 완료!';
+                timerText.textContent = '완료';
+                updateProgress(0);
+                updateButtons(false, true);
+            }
+        }, 2000);
     };
 
     // 초기 표시
@@ -169,6 +185,7 @@ function initTimer() {
 startBtn.addEventListener('click', () => {
     const currentTask = getCurrentTask();
     if (currentTask && timer) {
+        timerDisplay.classList.remove('complete');
         timer.start();
         updateButtons(true, false);
         updateTaskStatus(currentTask.id, 'active');
@@ -250,7 +267,7 @@ startFocusBtn.addEventListener('click', () => {
         return;
     }
 
-    // 첫 번째 pending 작업으로 이동
+    // 첫 번째 작업으로 이동
     setCurrentIndex(0);
     showView('focus');
     updateTaskDisplay();
