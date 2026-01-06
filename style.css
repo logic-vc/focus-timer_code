@@ -1,0 +1,44 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    text-align: center;
+    padding: 1rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+h1 {
+    font-size: 1.5rem;
+}
+
+/* 태블릿 이상 */
+@media (min-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+}
+
+/* 데스크톱 */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 600px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+}
