@@ -1,4 +1,12 @@
 import { Timer } from './timer.js';
+import {
+    loadTasks,
+    getCurrentTask,
+    getNextTask,
+    moveToNextTask,
+    updateTaskStatus,
+    resetData
+} from './storage.js';
 
 // DOM 요소
 const progressCircle = document.querySelector('.progress-ring-circle');
@@ -6,11 +14,16 @@ const timerText = document.querySelector('.timer-text');
 const startBtn = document.getElementById('startBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const skipBtn = document.getElementById('skipBtn');
+const currentTaskTitle = document.getElementById('currentTaskTitle');
+const nextTaskTitle = document.getElementById('nextTaskTitle');
 
 // 원형 진행 바 설정
 const RADIUS = 90;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 progressCircle.style.strokeDasharray = CIRCUMFERENCE;
+
+// 타이머 인스턴스
+let timer = null;
 
 // 시간 포맷팅 (MM:SS)
 function formatTime(seconds) {
@@ -33,26 +46,75 @@ function updateButtons(isRunning, isComplete) {
     pauseBtn.textContent = '일시정지';
 }
 
-// 1분(60초) 타이머 생성
-const timer = new Timer(60);
+// 작업 정보 표시 업데이트
+function updateTaskDisplay() {
+    const current = getCurrentTask();
+    const next = getNextTask();
 
-// 타이머 콜백
-timer.onTick = (remainingSeconds, percentage) => {
-    timerText.textContent = formatTime(remainingSeconds);
-    updateProgress(percentage);
-    console.log(`남은 시간: ${formatTime(remainingSeconds)} (${percentage.toFixed(0)}%)`);
-};
+    currentTaskTitle.textContent = current ? current.title : '모든 작업 완료!';
+    nextTaskTitle.textContent = next ? next.title : '-';
+}
 
-timer.onComplete = () => {
-    console.log('완료!');
-    updateButtons(false, true);
-    timerText.textContent = '완료!';
-};
+// 타이머 초기화
+function initTimer() {
+    const currentTask = getCurrentTask();
+
+    if (!currentTask) {
+        timerText.textContent = '완료!';
+        updateProgress(0);
+        updateButtons(false, true);
+        return;
+    }
+
+    // 기존 타이머 정리
+    if (timer) {
+        timer.pause();
+    }
+
+    timer = new Timer(currentTask.duration);
+
+    timer.onTick = (remainingSeconds, percentage) => {
+        timerText.textContent = formatTime(remainingSeconds);
+        updateProgress(percentage);
+        console.log(`[${currentTask.title}] ${formatTime(remainingSeconds)} (${percentage.toFixed(0)}%)`);
+    };
+
+    timer.onComplete = () => {
+        console.log(`[${currentTask.title}] 완료!`);
+        updateTaskStatus(currentTask.id, 'completed');
+
+        // 다음 작업으로 자동 전환
+        const nextTask = moveToNextTask();
+        if (nextTask) {
+            console.log(`다음 작업: ${nextTask.title}`);
+            updateTaskDisplay();
+            initTimer();
+            // 자동 시작
+            timer.start();
+            updateButtons(true, false);
+            updateTaskStatus(nextTask.id, 'active');
+        } else {
+            updateTaskDisplay();
+            timerText.textContent = '완료!';
+            updateProgress(0);
+            updateButtons(false, true);
+        }
+    };
+
+    // 초기 표시
+    timerText.textContent = formatTime(currentTask.duration);
+    updateProgress(100);
+    updateButtons(false, false);
+}
 
 // 버튼 이벤트
 startBtn.addEventListener('click', () => {
-    timer.start();
-    updateButtons(true, false);
+    const currentTask = getCurrentTask();
+    if (currentTask && timer) {
+        timer.start();
+        updateButtons(true, false);
+        updateTaskStatus(currentTask.id, 'active');
+    }
 });
 
 pauseBtn.addEventListener('click', () => {
@@ -69,10 +131,19 @@ pauseBtn.addEventListener('click', () => {
 });
 
 skipBtn.addEventListener('click', () => {
-    timer.skip();
+    if (timer) {
+        timer.skip();
+    }
 });
 
-// 초기화
+// 앱 초기화
 console.log('앱 시작됨');
-timerText.textContent = formatTime(timer.duration);
-updateProgress(100);
+
+// 테스트용: 데이터 초기화 (새로운 더미 데이터로 시작)
+resetData();
+
+const data = loadTasks();
+console.log('작업 목록:', data.tasks.map(t => `${t.title} (${t.duration}초)`));
+
+updateTaskDisplay();
+initTimer();

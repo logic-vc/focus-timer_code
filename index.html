@@ -10,12 +10,23 @@
     <div class="container">
         <h1>Focus Timer</h1>
 
+        <div class="task-info">
+            <div class="current-task">
+                <span class="task-label">현재 작업</span>
+                <span class="task-title" id="currentTaskTitle">-</span>
+            </div>
+            <div class="next-task">
+                <span class="task-label">다음</span>
+                <span class="task-title" id="nextTaskTitle">-</span>
+            </div>
+        </div>
+
         <div class="timer-display">
             <svg class="progress-ring" viewBox="0 0 200 200">
                 <circle class="progress-ring-bg" cx="100" cy="100" r="90"/>
                 <circle class="progress-ring-circle" cx="100" cy="100" r="90"/>
             </svg>
-            <div class="timer-text">01:00</div>
+            <div class="timer-text">00:00</div>
         </div>
 
         <div class="controls">

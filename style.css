@@ -23,7 +23,37 @@ body {
 
 h1 {
     font-size: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* 작업 정보 */
+.task-info {
+    margin-bottom: 1.5rem;
+}
+
+.current-task {
+    margin-bottom: 0.5rem;
+}
+
+.current-task .task-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #4ade80;
+}
+
+.next-task {
+    opacity: 0.5;
+}
+
+.next-task .task-title {
+    font-size: 0.9rem;
+}
+
+.task-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 0.25rem;
 }
 
 /* 타이머 디스플레이 */
